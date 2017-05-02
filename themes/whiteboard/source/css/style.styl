@@ -73,6 +73,7 @@ embossed-bg()
       padding-bottom: 0.5em
   // This is the logo at the top of the ToC
   & > img
+    margin: 10px auto
     display: block
   & > .search
     position: relative
@@ -151,8 +152,6 @@ embossed-bg()
     .tocify-item>a
       padding-left: ($nav-padding + $nav-indent)
       font-size: 12px
-    // for embossed look:
-    embossed-bg()
     & > li:last-child
       box-shadow: none
       // otherwise it'll overflow out of the subheader
@@ -164,8 +163,6 @@ embossed-bg()
       .tocify-item>a
         padding-left: ($nav-padding + $nav-indent + $nav-indent*3)
         font-size: 12px
-        // for embossed look:
-        embossed-bg()
         & > li:last-child
           box-shadow: none
           // otherwise it'll overflow out of the subheader

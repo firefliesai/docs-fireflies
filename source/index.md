@@ -1,14 +1,13 @@
 ---
-title: API Reference
+title: Fireflies API Reference
 
 language_tabs:
+  - javascript
   - bash
-  - ruby
   - python
 
 toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='http://github.com/mpociot/whiteboard'>Documentation Powered by Whiteboard</a>
 
 includes:
   - errors
@@ -18,150 +17,205 @@ search: true
 
 # Introduction
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+Welcome to the Fireflies API! You can use our API to access Fireflies API endpoints, which provides a service to extract tasks from conversations.
 
-We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+The Fireflies API consists of two parts
 
-This example API documentation page was created with [Whiteboard](http://github.com/mpociot/whiteboard). Feel free to edit it and use it as a base for your own API's documentation.
+   - [Classification](#Classify) - Fireflies data model categorizes text to enable actions to be taken
+   - [Feedback](#Feedback) - Response from end-user sent back to Fireflies for model tuning
+
+We have language bindings in Node.js, Shell and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+
+# Rate Limits
+
+Based on your subscription plan, your application is subject to daily and per-minute limits. There are three response headers you can use to check your quota allowance, the number of calls remaining on your quota and the time and date your quota will be reset:
+
+- `X-RateLimit-Limit`: Daily limit of your current plan
+- `X-RateLimit-Remaining`: The amount remained from your daily quota
+- `X-RateLimit-Reset`: When the quotas are reset
+
+<aside class="warning">
+As these values are returned as response headers, you must make at least one successful API call before you can retrieve these values.
+</aside>
 
 # Authentication
 
 > To authorize, use this code:
 
-```ruby
-require 'kittn'
+```javascript
+var fireflies = require('node-fireflies-ml');
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
+fireflies.authorize('API_KEY');
 ```
 
 ```python
-import kittn
+import fireflies
 
-api = kittn.authorize('meowmeowmeow')
+fireflies.authorize('API_KEY')
 ```
 
 ```bash
 # With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
+```
+```bash
+curl "api_endpoint_here" \
+  -H "Authorization: API_KEY"
 ```
 
-> Make sure to replace `meowmeowmeow` with your API key.
+> Make sure to replace `API_KEY` with your API key.
 
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
+Fireflies uses API keys to allow access to the API. You can obtain a new Fireflies API key after your domain-specific model has been trained.
 
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
+Fireflies expects for the API key to be included in all API requests to the server in a header that looks like the following:
 
-`Authorization: meowmeowmeow`
+`Authorization: API_KEY`
 
 <aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
+You must replace <code>API_KEY</code> with your personal API key.
 </aside>
 
-# Kittens
+# Classify
 
-## Get All Kittens
+## Classify Text Content
 
-```ruby
-require 'kittn'
+```javascript
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```bash
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
-```
-
-> The above command returns JSON structured like this:
-
-```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+fireflies.classify({
+  text: 'sample sentence uttered from end user'
+}, function(error, response) {
+  if (error === null) {
+    response['intents'].forEach(function(c) {
+      console.log(c);
+    });
   }
-]
-```
+});
 
-This endpoint retrieves all kittens.
-
-### HTTP Request
-
-`GET http://example.com/api/kittens`
-
-### Query Parameters
-
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
-
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
-
-## Get a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
 ```
 
 ```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
+text = "sample sentence uttered from end user"
+classifications = fireflies.classify({"text": text})
+for intent in classifications['intents']:
+  print intent
 ```
 
 ```bash
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
+curl "https://dev.firefliesapp.com/api/v1/classify" \
+  -H "Authorization: API_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST \
+  -d text="sample sentence uttered from end user"
 ```
 
 > The above command returns JSON structured like this:
 
 ```json
 {
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
+  "ok": true,
+  "language":"en",
+  "intents":[
+    {
+      "label":"action item",
+      "code":"FF0001-wm5h3fe1f8ak",
+      "confidence":1
+    },
+    ...
+  ],
+  "text":"sample sentence uttered from end user"
 }
 ```
 
-This endpoint retrieves a specific kitten.
+This endpoint retrieves all intents that are extracted from the text.
 
-<aside class="warning">If you're not using an administrator API key, note that some kittens will return 403 Forbidden if they are hidden for admins only.</aside>
+The returned intent can be helpful in providing the user an action. This **Classification** endpoint allows the developer to recommend actions to the end user, based on the confidence level of each intent.
+
+We recommend a minimum confidence of 0.50 before taking action on a given intent, however, depending on the intrusiveness on the suggested action, this can be lowered.
+
+<aside class="success">
+ We [provide consultation](https://fireflies.ai/support) on best practices to take action on intents.
+</aside>
+
+Providing the `user` and `user_group` parameters on this request will improve recommendations when this API is used in conjunction with the Feedback API. Fireflies is able to provide intent classification on a per-group and per-user basis, by factoring in the responses to previous suggestions in the data model. For most customers, the models are trained once every week. [Contact us](https://fireflies.ai/support)  for a finer-grained control and frequency of model deployment.
+
+Be sure to use the returned `code` parameter in the request to the Feedback API response so that Fireflies understands which recommendation was acted on learns over time.
 
 ### HTTP Request
 
-`GET http://example.com/kittens/<ID>`
+`POST https://dev.firefliesapp.com/api/v1/classify`
 
-### URL Parameters
+### Query Parameters
 
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
+Parameter |  Type |  Optional | Description
+--------- | ----------- | ----------- | -----------
+text | String | false | The sentence to receive an intent estimate from.
+user | String | true | A unique identifier for the end user uttering the text.
+user_group | String | true | A unique identifier for a group containing the end user (team, company, etc).
+
+
+# Feedback
+
+## Submit User Response
+
+```javascript
+
+fireflies.feedback({
+  code: 'CODE_FROM_CLASSIFY_SUGGESTION', /* ex: 'FF0001-wm5h3fe1f8ak' */
+  result: 'accept'
+}, function(error, response) {
+  if (error) {
+    console.log(error)
+  }
+});
+
+```
+
+```python
+code = "CODE_FROM_CLASSIFY_SUGGESTION"
+result = "accept"
+fireflies.feedback({"code": code, "result": result})
+
+```
+
+```bash
+curl "https://dev.firefliesapp.com/api/v1/feedback" \
+  -H "Authorization: API_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST \
+  -d code="CODE_FROM_CLASSIFY_SUGGESTION" \
+  -d result="accept"
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "ok":true,
+  "result": "accept"
+}
+```
+
+This endpoint accepts feedback from the end user on the suggested intent from the Classify API. Your application should unobtrusively present the user the suggestion between calls of the Classify API and the Feedback API. After the user has been given time to act on the suggestion (we suggest 5 minutes after known activitiy), use this API to improve future suggestions.
+
+<aside class="success">
+We [provide consultation](https://fireflies.ai/support) on best practices to collect user feedback from suggested actions.
+</aside>
+
+Provide the `code` parameter with every request to the Feedback API. This parameter should be equal to the Classify API intent's `code` parameter, with which the feedback result is associated.
+
+Accepted `result` values to the Fireflies Feedback API include `["accept","decline","ignore","spam"]`. Map the user's response as closely as possible to one of these four values. If more precise feedback control is required, please [contact us](https://fireflies.ai/support) for custom response support.
+
+Providing the `user` and `user_group` parameters on this request will improve recommendations when this API is used in conjunction with the Classify API. Fireflies is able to provide intent classification on a per-group and per-user basis, by factoring in the responses to previous suggestions in the data model. For most customers, the models are trained once every week. [Contact us](https://fireflies.ai/support)  for a finer-grained control and frequency of model deployment.
+
+### HTTP Request
+
+`POST https://dev.firefliesapp.com/api/v1/feedback`
+
+### Query Parameters
+
+Parameter |  Type |  Optional | Description
+--------- | ----------- | ----------- | -----------
+code | String | false | The code associated with the recommended action. This code comes in the response to the Classify API.
+result | String | false | The result of the recommendation. Takes on one of these values: `["accept","decline","ignore","spam"]`
+user | String | true | A unique identifier for the end user uttering the text.
+user_group | String | true | A unique identifier for a group containing the end user (team, company, etc).
+
