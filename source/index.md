@@ -7,7 +7,7 @@ language_tabs:
   - python
 
 toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
+  - <a href='mailto:enterprise@fireflies.ai?Subject=Registering%20for%20Fireflies%20API'>Sign Up for a Developer Key</a>
 
 includes:
   - errors
