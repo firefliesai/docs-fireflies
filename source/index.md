@@ -279,7 +279,6 @@ curl "https://dev.firefliesapp.com/api/v1/context" \
   "label": "action item",
   "language": "en",
   "confidence": 0.765234,
-  "verb": "will send",
   "suggestionFor": "subject",
   "entities": [],
   "text": "i will send you the letter"
@@ -293,7 +292,6 @@ curl "https://dev.firefliesapp.com/api/v1/context" \
   "label": "calendar",
   "language": "en",
   "confidence": 0.765234,
-  "verb": "lets set up",
   "subject": "Ashley",
   "object": "Bruno",
   "suggestionFor": "object",
@@ -336,7 +334,6 @@ Parameter |  Type | Description
 label | String | A descriptive identifier for the suggested intent.
 language | String | The accepted language of the given text.
 confidence | Float | A computed confidence score from 0-1 for the suggested intent.
-verb | String | The matching phrase - e.g. phrase triggering the highest intent activation.
 subject | String | Describes the person creating the intent, often matching a `user` or `user_group`.
 object | String | Describes the person the intent is targeted towards, often matching a `user` or `user_group`.
 suggestionFor | String | Describes who the intent is intended for. Takes on one of these values: `["subject","object"]`.
