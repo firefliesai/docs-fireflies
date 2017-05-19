@@ -198,7 +198,7 @@ curl "https://dev.firefliesapp.com/api/v1/feedback" \
   -H "Authorization: Bearer API_KEY" \
   -H "Content-Type: application/json" \
   -X POST \
-  -d '{"code":"CODE_FROM_CLASSIFY_SUGGESTION", "result":"accept"}
+  -d '{"code":"CODE_FROM_CLASSIFY_SUGGESTION", "result":"accept"}'
 ```
 
 > The above command returns JSON structured like this:
@@ -268,7 +268,7 @@ curl "https://dev.firefliesapp.com/api/v1/context" \
   -H "Authorization: Bearer API_KEY" \
   -H "Content-Type: application/json" \
   -X POST \
-  -d '{"code":"CODE_FROM_CLASSIFY_SUGGESTION"}
+  -d '{"code":"CODE_FROM_CLASSIFY_SUGGESTION"}'
 ```
 
 > The above command returns JSON structured like this:
