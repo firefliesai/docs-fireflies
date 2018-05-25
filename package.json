@@ -1,6 +1,13 @@
 {
-  "name": "whiteboard",
-  "version": "1.1.0",
+  "name": "docs-fireflies",
+  "version": "1.2.0",
+  "now": {
+      "alias": "docs.fireflies.ai"
+  },
+  "engines":{
+      "node": "^6.10.3"
+  },
+  "public": false,
   "license": "Apache-2.0",
   "main": "lib/whiteboard",
   "hexo": {
@@ -22,6 +29,7 @@
   },
   "scripts": {
     "start": "hexo server",
-    "generate": "hexo generate"
+    "generate": "hexo generate",
+    "now-deploy": "now --docker && now alias"
   }
 }
